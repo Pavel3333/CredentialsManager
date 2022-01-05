@@ -1,0 +1,46 @@
+{% extends 'base.html' %}
+
+{% block title %}Session{% endblock %}
+
+{% block content %}
+    {% if not credentials %}
+        <h2>Credentials list is empty!</h2>
+    {% else %}
+        <h2>Credentials:</h2>
+        <ul>
+        {% for service_name, service_credentials in credentials.items() %}
+            <li>
+                {{service_name}}:
+                <ul>
+                {% for key, value in service_credentials.items() %}
+                    <li>
+                        {{key}}: {{value}}
+                    </li>
+                {% endfor %}
+                </ul>
+            </li>
+        {% endfor %}
+        </ul>
+    {% endif %}
+
+    <h2>Add service credentials</h2>
+    <form method="post">
+        <label for="master_key">Master Key</label>
+        <input type="password" name="master_key" id="master_key" value="{{master_key}}" required/>
+        <br>
+
+        <label for="service_name">Service name</label>
+        <input name="service_name" id="service_name" required/>
+        <br>
+
+        <label for="node_name">Credentials name</label>
+        <input name="node_name" id="node_name" required/>
+        <br>
+
+        <label for="node_value">Credentials value</label>
+        <input type="password" name="node_value" id="node_value" required/>
+        <br>
+
+        <input type="submit" value="Add service credentials"/>
+    </form>
+{% endblock %}

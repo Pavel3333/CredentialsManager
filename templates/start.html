@@ -1,0 +1,14 @@
+{% extends 'base.html' %}
+
+{% block title %}Session Start{% endblock %}
+
+{% block content %}
+    {% if error %}
+        <h2>Error: {{error}}</h2>
+    {% endif %}
+    <form method="post">
+        <label for="master_key">Master Key</label>
+        <input type="password" name="master_key" id="master_key" required>
+        <input type="submit" value="Start">
+    </form>
+{% endblock %}
