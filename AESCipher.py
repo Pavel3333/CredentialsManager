@@ -28,7 +28,6 @@ class AESCipher(object):
     def decrypt(self, serialized_data):
         complex_data = base64.b64decode(serialized_data)
         iv, encrypted_data = complex_data[:AES.block_size], complex_data[AES.block_size:]
-        print(f'iv: {iv}, encrypted_data: {encrypted_data}')
 
         cipher = AES.new(self.__key, self._MODE, iv)
 

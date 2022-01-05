@@ -34,7 +34,6 @@ class Credentials(object):
         return self
 
     def __exit__(self, *args):
-        print(f'args: {args}')
         self.__save_credentials_data()
 
         self.__data = None
