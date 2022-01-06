@@ -3,26 +3,6 @@
 {% block title %}Session{% endblock %}
 
 {% block content %}
-    {% if not credentials %}
-        <h2>Credentials list is empty!</h2>
-    {% else %}
-        <h2>Credentials:</h2>
-        <ul>
-        {% for service_name, service_credentials in credentials.items() %}
-            <li>
-                {{service_name}}:
-                <ul>
-                {% for key, value in service_credentials.items() %}
-                    <li>
-                        {{key}}: {{value}}
-                    </li>
-                {% endfor %}
-                </ul>
-            </li>
-        {% endfor %}
-        </ul>
-    {% endif %}
-
     <h2>Add service credentials</h2>
     <form method="post">
         <label for="master_key">Master Key</label>
@@ -43,4 +23,24 @@
 
         <input type="submit" value="Add service credentials"/>
     </form>
+
+    {% if not credentials %}
+        <h2>Credentials list is empty!</h2>
+    {% else %}
+        <h2>Credentials:</h2>
+        <ul>
+        {% for service_name, service_credentials in credentials.items() %}
+            <li>
+                <b>{{service_name}}</b>:
+                <ul>
+                {% for key, value in service_credentials.items() %}
+                    <li>
+                        <b>{{key}}</b>: {{value}}
+                    </li>
+                {% endfor %}
+                </ul>
+            </li>
+        {% endfor %}
+        </ul>
+    {% endif %}
 {% endblock %}
