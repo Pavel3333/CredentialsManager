@@ -8,10 +8,15 @@ from Crypto import Random
 class AESCipher(object):
     _MODE = AES.MODE_CBC
 
+    __slots__ = ('__key',)
+
     def __init__(self, key):
         super(AESCipher, self).__init__()
 
-        self.__key = hashlib.sha256(key.encode()).digest()
+        self.__key = self.__get_key(key)
+
+    def set_key(self, value):
+        self.__key = self.__get_key(value)
 
     def encrypt(self, data):
         padded_data = self.__pad(data)
@@ -47,3 +52,6 @@ class AESCipher(object):
     @staticmethod
     def __unpad(data):
         return data[:-data[-1]]
+
+    def __get_key(self, key):
+        return hashlib.sha256(key.encode()).digest()

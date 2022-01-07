@@ -1,12 +1,41 @@
 <!DOCTYPE html>
 <html lang="en">
     <head>
+        <!-- Required meta tags -->
         <title>{% block title %}{% endblock %} - {{app_name}}</title>
         <meta charset="UTF-8"/>
+
+        <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+
+        <!-- Bootstrap CSS -->
+        <link rel="stylesheet" href="/static/css/bootstrap.min.css"></link>
     </head>
     <body>
-        <div id="content" style="font-family: monospace;">
+        {% if error %}
+        <div id="error" class="container">
+            <h2>Error: {{error}}</h2>
+        </div>
+        {% endif %}
+
+        {% if messages %}
+        <div id="messages" class="container">
+            <h2>Messages:</h2>
+            <ul>
+                {% for message in messages %}
+                    <li>
+                        <b>Message</b>: {{message}}
+                    </li>
+                {% endfor %}
+            </ul>
+        </div>
+        {% endif %}
+
+        <div id="content" class="container-fluid">
             {% block content %}{% endblock %}
         </div>
+
+        <script src="https://code.jquery.com/jquery-3.2.1.slim.min.js" integrity="sha384-KJ3o2DKtIkvYIK3UENzmM7KCkRr/rE9/Qpg6aAZGJwFDMVNA/GpGFF93hXpG5KkN" crossorigin="anonymous"></script>
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.9/umd/popper.min.js" integrity="sha384-ApNbgh9B+Y1QKtv3Rn7W3mgPxhU9K/ScQsAP7hUibX39j7fakFPskvXusvfa0b4Q" crossorigin="anonymous"></script>
+        <script src="/static/js/bootstrap.bundle.min.js"></script>
     </body>
 </html>
