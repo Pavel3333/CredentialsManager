@@ -26,12 +26,13 @@ class Fields(object):
     NewMasterKeyRepeat = 'new_master_key_repeat'
 
 class Credentials(object):
-    __slots__ = ('__data', '__cipher', '__messages')
+    __slots__ = ('__data', '__cipher', '__messages', '__is_data_changed')
 
     def __init__(self, master_key):
         super(Credentials, self).__init__()
 
         self.__data = None
+        self.__is_data_changed = False
         self.__cipher = AESCipher(master_key)
         self.__messages = []
 
@@ -44,6 +45,7 @@ class Credentials(object):
         self.__save_credentials_data()
 
         self.__data = None
+        self.__is_data_changed = False
         self.__cipher = None
         self.__messages.clear()
 
@@ -62,6 +64,8 @@ class Credentials(object):
         if not service_credentials:
             data.pop(service_name, None)
 
+        self.__is_data_changed = True
+
     def set_master_key(self, new_master_key, new_master_key_repeat):
         if not (new_master_key and new_master_key_repeat):
             return
@@ -75,7 +79,7 @@ class Credentials(object):
             return
 
         self.__cipher.set_key(new_master_key)
-
+        self.__is_data_changed = True
         self.__add_message('Master key was changed')
 
     def get_data(self):
@@ -94,6 +98,9 @@ class Credentials(object):
         return self.__decrypt_credentials_data(encrypted_data)
 
     def __save_credentials_data(self):
+        if not self.__is_data_changed:
+            return
+
         encrypted_data = self.__encrypt_credentials_data()
         if encrypted_data is None:
             self.__add_message('Save credentials data: nothing to save')
