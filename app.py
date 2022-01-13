@@ -1,9 +1,14 @@
+import codecs
 import pickle
+import hashlib
 import string
 
 from AESCipher import AESCipher
 from os.path import exists
 from flask import Flask, escape, request, render_template
+
+
+# TODO: salt constaint by real random sequence
 
 
 class Constants(object):
@@ -15,6 +20,9 @@ class Constants(object):
 class Fields(object):
     # Common for all forms
     MasterKey = 'master_key'
+
+    # Session key hash
+    MasterKeyHash = 'master_key_hash'
 
     # Add service credentials node form
     ServiceName = 'service_name'
@@ -28,12 +36,12 @@ class Fields(object):
 class Credentials(object):
     __slots__ = ('__data', '__cipher', '__messages', '__is_data_changed')
 
-    def __init__(self, master_key):
+    def __init__(self, master_key_hash):
         super(Credentials, self).__init__()
 
         self.__data = None
         self.__is_data_changed = False
-        self.__cipher = AESCipher(master_key)
+        self.__cipher = AESCipher(master_key_hash)
         self.__messages = []
 
     def __enter__(self):
@@ -75,10 +83,13 @@ class Credentials(object):
             return
 
         if not check_master_key(new_master_key):
-            self.__add_message('Set master key: Master key has incorrect format! It should have not less than {:d} lowercase, uppercase characters and digits')
+            self.__add_message(
+                f'Set master key: Master key has incorrect format!'
+                ' It should have not less than {Constants.MasterKeyMinSize} lowercase, uppercase characters and digits'
+            )
             return
 
-        self.__cipher.set_key(new_master_key)
+        self.__cipher.set_key(self.get_key_hash(new_master_key))
         self.__is_data_changed = True
         self.__add_message('Master key was changed')
 
@@ -87,6 +98,13 @@ class Credentials(object):
 
     def get_messages(self):
         return self.__messages
+
+    def get_master_key_hash(self):
+        return self.__cipher.get_key()
+
+    @staticmethod
+    def get_key_hash(key):
+        return hashlib.sha256(key.encode()).digest()
 
     def __read_credentials_data(self):
         if not exists(Constants.CredentialsPath):
@@ -158,11 +176,12 @@ def context_processor():
 @app.route("/", methods=['GET', 'POST'])
 def main():
     if request.method == 'GET':
-        master_key = new_master_key_data = new_node_data = None
+        master_key = master_key_hash = new_master_key_data = new_node_data = None
     else:
         form_data = request.form
 
         master_key = form_data.get(Fields.MasterKey)
+        master_key_hash = form_data.get(Fields.MasterKeyHash)
         new_master_key_data = tuple(map(form_data.get, (
             Fields.NewMasterKey,
             Fields.NewMasterKeyRepeat
@@ -173,13 +192,19 @@ def main():
             Fields.NodeValue
         )))
 
-    if not master_key:
+    if not (master_key or master_key_hash):
         return render_template('start.html')
 
-    if not check_master_key(master_key):
-        return render_template('start.html', error='Invalid master key format')
+    if master_key:
+        if not check_master_key(master_key):
+            return render_template('start.html', error='Invalid master key format')
 
-    with Credentials(master_key) as credentials:
+        master_key_hash = Credentials.get_key_hash(master_key)
+    elif master_key_hash:
+        master_key_hash = codecs.decode(master_key_hash, 'hex')
+        print(f'master_key_hash: {master_key_hash}')
+
+    with Credentials(master_key_hash) as credentials:
         credentials_data = credentials.get_data()
         if credentials_data is None:
             return render_template(
@@ -196,7 +221,7 @@ def main():
 
         return render_template(
             'session.html',
-            master_key=escape(master_key),
+            master_key_hash=escape(codecs.encode(credentials.get_master_key_hash(), 'hex').decode()),
             credentials=credentials_data,
             messages=credentials.get_messages()
         )

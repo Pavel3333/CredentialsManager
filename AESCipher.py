@@ -1,5 +1,4 @@
 import base64
-import hashlib
 
 from Crypto.Cipher import AES
 from Crypto import Random
@@ -13,10 +12,13 @@ class AESCipher(object):
     def __init__(self, key):
         super(AESCipher, self).__init__()
 
-        self.__key = self.__get_key(key)
+        self.__key = key
+
+    def get_key(self):
+        return self.__key
 
     def set_key(self, value):
-        self.__key = self.__get_key(value)
+        self.__key = value
 
     def encrypt(self, data):
         padded_data = self.__pad(data)
@@ -52,6 +54,3 @@ class AESCipher(object):
     @staticmethod
     def __unpad(data):
         return data[:-data[-1]]
-
-    def __get_key(self, key):
-        return hashlib.sha256(key.encode()).digest()
