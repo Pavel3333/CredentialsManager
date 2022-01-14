@@ -1,7 +1,8 @@
 version: '3.8'
 
 services:
-  web:
+  credentials_manager:
+    image: pavel3333/credentials_manager
     build: ./service
     command: python manage.py run -h 0.0.0.0
     volumes:
