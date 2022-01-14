@@ -2,10 +2,12 @@ import codecs
 
 from src.Common import check_master_key
 from src.Constants import Constants, Fields
+from src.Credentials import Credentials
 from flask import Flask, escape, request, render_template
 
 
 app = Flask(__name__, root_path=Constants.AppRoot)
+print(f'root_path: {app.root_path}')
 
 
 @app.context_processor

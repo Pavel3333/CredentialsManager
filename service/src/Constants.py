@@ -3,13 +3,12 @@ import os
 
 class Constants(object):
     AppName = 'Credentials Server'
-    AppRoot = os.path.normpath(os.path.join(os.getcwd(), '..'))
-    CredentialsPath = os.path.join(AppRoot, 'data', 'creds.bin')
+    AppRoot = os.getcwd()
+    CredentialsPath = os.path.join('data', 'creds.bin')
     MasterKeyMinSize = 12
 
     SaltSize = 10
     Salt = '\xa0\x05\xb9n\x84\xcdg\x07\x19T'  # os.urandom(SaltSize)
-
 
 class Fields(object):
     # Common for all forms
