@@ -1,39 +1,11 @@
-import codecs
 import pickle
 import hashlib
-import string
 
 from AESCipher import AESCipher
-# from os import urandom
+from Common import check_master_key
+from Constants import Constants
 from os.path import exists
-from flask import Flask, escape, request, render_template
 
-
-_SALT_SIZE = 10
-_SALT = '\xa0\x05\xb9n\x84\xcdg\x07\x19T'  # urandom(_SALT_SIZE)
-
-
-class Constants(object):
-    AppName = 'Credentials Server'
-    CredentialsPath = 'creds.bin'
-    MasterKeyMinSize = 12
-
-
-class Fields(object):
-    # Common for all forms
-    MasterKey = 'master_key'
-
-    # Session key hash
-    MasterKeyHash = 'master_key_hash'
-
-    # Add service credentials node form
-    ServiceName = 'service_name'
-    NodeName = 'node_name'
-    NodeValue = 'node_value'
-
-    # Change Master Key form
-    NewMasterKey = 'new_master_key'
-    NewMasterKeyRepeat = 'new_master_key_repeat'
 
 class Credentials(object):
     __slots__ = ('__data', '__cipher', '__messages', '__is_data_changed')
@@ -106,7 +78,7 @@ class Credentials(object):
 
     @staticmethod
     def get_key_hash(key):
-        key += _SALT
+        key += Constants.Salt
         return hashlib.sha256(key.encode()).digest()
 
     def __read_credentials_data(self):
@@ -157,74 +129,3 @@ class Credentials(object):
 
     def __add_message(self, message):
         self.__messages.append(message)
-
-
-def check_master_key(key):
-    return (
-        len(key) >= Constants.MasterKeyMinSize and
-        any(c in string.ascii_lowercase for c in key) and
-        any(c in string.ascii_uppercase for c in key) and
-        any(c in string.digits for c in key)
-    )
-
-
-app = Flask(__name__)
-
-@app.context_processor
-def context_processor():
-    return {
-        'app_name': Constants.AppName
-    }
-
-@app.route("/", methods=['GET', 'POST'])
-def main():
-    if request.method == 'GET':
-        master_key = master_key_hash = new_master_key_data = new_node_data = None
-    else:
-        form_data = request.form
-
-        master_key = form_data.get(Fields.MasterKey)
-        master_key_hash = form_data.get(Fields.MasterKeyHash)
-        new_master_key_data = tuple(map(form_data.get, (
-            Fields.NewMasterKey,
-            Fields.NewMasterKeyRepeat
-        )))
-        new_node_data = tuple(map(form_data.get, (
-            Fields.ServiceName,
-            Fields.NodeName,
-            Fields.NodeValue
-        )))
-
-    if not (master_key or master_key_hash):
-        return render_template('start.html')
-
-    if master_key:
-        if not check_master_key(master_key):
-            return render_template('start.html', error='Invalid master key format')
-
-        master_key_hash = Credentials.get_key_hash(master_key)
-    elif master_key_hash:
-        master_key_hash = codecs.decode(master_key_hash, 'hex')
-        print(f'master_key_hash: {master_key_hash}')
-
-    with Credentials(master_key_hash) as credentials:
-        credentials_data = credentials.get_data()
-        if credentials_data is None:
-            return render_template(
-                'start.html',
-                error='Unable to get credentials data',
-                messages=credentials.get_messages()
-            )
-
-        if new_master_key_data is not None:
-            credentials.set_master_key(*new_master_key_data)
-
-        if new_node_data is not None:
-            credentials.add_node(*new_node_data)
-
-        return render_template(
-            'session.html',
-            master_key_hash=escape(codecs.encode(credentials.get_master_key_hash(), 'hex').decode()),
-            credentials=credentials_data,
-            messages=credentials.get_messages()
-        )
