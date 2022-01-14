@@ -1,9 +1,9 @@
 import pickle
 import hashlib
 
-from AESCipher import AESCipher
-from Common import check_master_key
-from Constants import Constants
+from src.AESCipher import AESCipher
+from src.Common import check_master_key
+from src.Constants import Constants
 from os.path import exists
 
 

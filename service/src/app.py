@@ -1,7 +1,7 @@
 import codecs
 
-from Common import check_master_key
-from Constants import Constants, Fields
+from src.Common import check_master_key
+from src.Constants import Constants, Fields
 from flask import Flask, escape, request, render_template
 
 

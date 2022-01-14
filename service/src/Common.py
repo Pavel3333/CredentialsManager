@@ -1,6 +1,6 @@
 import string
 
-from Constants import Constants
+from src.Constants import Constants
 
 
 def check_master_key(key):
