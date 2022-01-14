@@ -4,11 +4,13 @@ import hashlib
 import string
 
 from AESCipher import AESCipher
+# from os import urandom
 from os.path import exists
 from flask import Flask, escape, request, render_template
 
 
-# TODO: salt constaint by real random sequence
+_SALT_SIZE = 10
+_SALT = '\xa0\x05\xb9n\x84\xcdg\x07\x19T'  # urandom(_SALT_SIZE)
 
 
 class Constants(object):
@@ -104,6 +106,7 @@ class Credentials(object):
 
     @staticmethod
     def get_key_hash(key):
+        key += _SALT
         return hashlib.sha256(key.encode()).digest()
 
     def __read_credentials_data(self):
