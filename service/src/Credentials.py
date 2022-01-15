@@ -58,8 +58,8 @@ class Credentials(object):
 
         if not check_master_key(new_master_key):
             self.__add_message(
-                f'Set master key: Master key has incorrect format!'
-                ' It should have not less than {Constants.MasterKeyMinSize} lowercase, uppercase characters and digits'
+                'Set master key: Master key has incorrect format!'
+                f' It should have not less than {Constants.MasterKeyMinSize} lowercase, uppercase characters and digits'
             )
             return
 
