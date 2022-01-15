@@ -9,6 +9,11 @@ from flask import Flask, escape, request, render_template
 app = Flask(__name__, root_path=Constants.AppRoot)
 
 
+@app.route('/favicon.ico')
+def favicon():
+    return app.send_static_file('favicon.ico')
+
+
 @app.context_processor
 def context_processor():
     return {

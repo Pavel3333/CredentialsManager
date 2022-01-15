@@ -3,7 +3,7 @@ import os
 
 class Constants(object):
     AppName = 'Credentials Server'
-    AppRoot = os.getcwd()
+    AppRoot = os.getenv('APP_FOLDER')
     CredentialsPath = os.path.join(AppRoot, 'data', 'creds.bin')
     MasterKeyMinSize = 12
 

@@ -38,7 +38,7 @@ FROM python:3.11-rc-slim
 RUN mkdir -p /home/CredentialsManager
 
 # create the app user
-RUN addgroup --system credentials_manager && adduser --system --group credentials_manager
+RUN addgroup --system --GID 1000 credentials_manager && adduser --system --UID 1000 --group credentials_manager
 
 # create the appropriate directories
 ENV HOME=/home/CredentialsManager
