@@ -6,7 +6,7 @@ services:
     build: ./service
     command: python manage.py run -h 0.0.0.0
     volumes:
-      - ./data:/usr/src/CredentialsManager/data/
+      - ./data:/home/CredentialsManager/service/data/
     ports:
       - 5000:5000
     env_file:
