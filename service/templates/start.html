@@ -3,9 +3,74 @@
 {% block title %}Session Start{% endblock %}
 
 {% block content %}
-    <form method="post">
-        <label for="master_key">Master Key</label>
-        <input type="password" name="master_key" id="master_key" required>
-        <input type="submit" value="Start">
-    </form>
+    <div class="row">
+        <div class="col-sm-3 order-2">
+            <div class="card">
+                <div class="card-header">
+                    <h4>
+                        Upload credentials
+                    </h4>
+                </div>
+                <div class="card-body">
+                    <form method="post" enctype="multipart/form-data">
+					    <div class="form-group">
+                            <label for="credentials_file">Credentials File (*.enpassbackup)</label>
+                            <input type="file" name="credentials_file" class="form-control" id="credentials_file" required/>
+					    </div>
+
+                        <button type="submit" class="btn btn-primary">Upload file</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+        <div class="col-sm-9 order-1">
+            <div class="card">
+                <div class="card-header">
+                    <h4>
+                        {% if not credentials_list %}
+                            Credentials list is empty</h4>
+                        {% else %}
+                            Credentials
+                        {% endif %}
+                    </h4>
+                </div>
+
+				{% if credentials_list %}
+				<div class="card-body container">
+					{% for credentials in credentials_list %}
+						{% set credentials_id = 'credentials_{:d}'.format(credentials.get_id()) %}
+						<div class="row card" id="{{credentials_id}}">
+							<div class="card-header">
+								<h5>
+									<b>
+										<a href="/{{credentials.get_name()}}">
+										    {{credentials.get_name()}}
+									    </a>
+									</b>
+								</h5>
+							</div>
+							<div class="card-body container-fluid">
+								<dl class="row">
+									<dt class="col-sm-5">
+										<b>Modify time</b>
+									</dt>
+									<dd class="col-sm-7">
+										{{credentials.get_modify_time_repr()}}
+									</dd>
+
+									<dt class="col-sm-5">
+										<b>Size</b>
+									</dt>
+									<dd class="col-sm-7">
+										{{credentials.get_size_repr()}}
+									</dd>
+								</dl>
+							</div>
+						</div>
+						<br>
+					{% endfor %}
+				</div>
+				{% endif %}
+        </div>
+    </div>
 {% endblock %}

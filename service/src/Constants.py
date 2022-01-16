@@ -2,9 +2,13 @@ import os
 
 
 class Constants(object):
-    AppName = 'Credentials Server'
+    AppName = 'Credentials Manager'
     AppRoot = os.getenv('APP_FOLDER')
-    CredentialsPath = os.path.join(AppRoot, 'data', 'creds.bin')
+    CredentialsDir = os.path.join(AppRoot, 'data')
+    CredentialsPrefix = 'credentials_'
+    CredentialsExt = '.enpassbackup'
+    CredentialsNameFmt = f'{CredentialsPrefix}{{:d}}{CredentialsExt}'
+    CredentialsNamePattern = f'{CredentialsPrefix}(\\d+)\\{CredentialsExt}'
     MasterKeyMinSize = 12
 
     SaltSize = 10
@@ -12,8 +16,8 @@ class Constants(object):
 
 
 class Fields(object):
-    # Common for all forms
-    MasterKey = 'master_key'
+    # Upload form
+    CredentialsFile = 'credentials_file'
 
     # Session key hash
     MasterKeyHash = 'master_key_hash'
