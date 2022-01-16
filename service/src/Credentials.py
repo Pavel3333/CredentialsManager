@@ -15,7 +15,7 @@ class Credentials(object):
 
         self.__id = id_
         self.__name = name = Constants.CredentialsNameFmt.format(id_)
-        self.__path = path = join(Constants.CredentialsDir, name)
+        self.__path = join(Constants.CredentialsDir, name)
         self.__modify_time = None
         self.__size = None
 
